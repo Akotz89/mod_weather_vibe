@@ -73,7 +73,7 @@ void WeatherVibeCore::OnStartup()
     m_lastApplied.clear();
     m_zoneToMapId.clear();
 
-    LOG_INFO("server.loading", "[WeatherVibe] started (packet mode, per-state ranges, profiles {})",
+    LOG_DEBUG("server.loading", "[WeatherVibe] started (packet mode, per-state ranges, profiles {})",
         m_profileEnabled ? "enabled" : "disabled");
 }
 

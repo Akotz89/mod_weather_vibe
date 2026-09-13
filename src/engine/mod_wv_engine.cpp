@@ -465,7 +465,7 @@ static void TickProfile(WeatherProfile& prof, uint32 diff, Season season)
 
             if (sWeatherVibeCore.IsDebug())
             {
-                LOG_INFO("server.loading",
+                LOG_DEBUG("server.loading",
                     "[WeatherVibe] '{}' season changed {} -> {}, blending for {}s",
                     prof.name, SeasonKey(st.prevSeason), SeasonKey(season),
                     ts.seasonBlendMs / 1000);
@@ -506,7 +506,7 @@ static void TickProfile(WeatherProfile& prof, uint32 diff, Season season)
 
             if (sWeatherVibeCore.IsDebug())
             {
-                LOG_INFO("server.loading",
+                LOG_DEBUG("server.loading",
                     "[WeatherVibe] '{}' interval expired, selecting next weather (changes {}/{})",
                     prof.name, st.changesThisHour, ts.changesPerHr);
 
@@ -534,7 +534,7 @@ static void TickProfile(WeatherProfile& prof, uint32 diff, Season season)
 
                 /* if (sWeatherVibeCore.IsDebug())
                  {
-                     LOG_INFO("server.loading",
+                     LOG_DEBUG("server.loading",
                          "[WeatherVibe] '{}' reapply: {}% {}",
                          prof.name, static_cast<int>(st.currentPct),
                          WeatherVibeCore::WeatherStateName(
@@ -607,7 +607,7 @@ static void TickProfile(WeatherProfile& prof, uint32 diff, Season season)
 
             if (sWeatherVibeCore.IsDebug())
             {
-                LOG_INFO("server.loading",
+                LOG_DEBUG("server.loading",
                     "[WeatherVibe] '{}' fadeIn arrived at {}% {}, holding for {}ms, changes {}/{}",
                     prof.name, static_cast<int>(st.currentPct),
                     WeatherVibeCore::WeatherStateName(static_cast<WeatherState>(st.currentStateVal)),
@@ -640,7 +640,7 @@ static void TickProfile(WeatherProfile& prof, uint32 diff, Season season)
 
         if (sWeatherVibeCore.IsDebug())
         {
-            LOG_INFO("server.loading",
+            LOG_DEBUG("server.loading",
                 "[WeatherVibe] '{}' arrived at {}% {}, holding for {}ms, changes {}/{}",
                 prof.name, static_cast<int>(st.currentPct),
                 WeatherVibeCore::WeatherStateName(static_cast<WeatherState>(st.currentStateVal)),
@@ -761,7 +761,7 @@ static void ScheduleNextEvent(WeatherProfile& prof, Season season)
 
     if (sWeatherVibeCore.IsDebug())
     {
-        LOG_INFO("server.loading",
+        LOG_DEBUG("server.loading",
             "[WeatherVibe] '{}' scheduled: {} -> {} at {}%, interval={}ms, phase={}",
             prof.name,
             WeatherVibeCore::WeatherStateName(static_cast<WeatherState>(st.currentStateVal)),
@@ -798,7 +798,7 @@ void WeatherVibeEngine_Init()
     // Zones sharing the same profile name get synced weather.
     auto mappings = GetMultiOption("WeatherVibe.ZoneProfile");
 
-    LOG_INFO("server.loading", "[WeatherVibe] found {} zone mapping(s)", mappings.size());
+    LOG_DEBUG("server.loading", "[WeatherVibe] found {} zone mapping(s)", mappings.size());
 
     std::unordered_map<std::string, std::vector<uint32>> profileZones;
     for (auto const& raw : mappings)
@@ -813,7 +813,7 @@ void WeatherVibeEngine_Init()
 
     if (profileZones.empty())
     {
-        LOG_INFO("server.loading", "[WeatherVibe] no zone profiles configured");
+        LOG_DEBUG("server.loading", "[WeatherVibe] no zone profiles configured");
         return;
     }
 
@@ -861,7 +861,7 @@ void WeatherVibeEngine_Init()
         // Log with zone list.
         std::ostringstream zl;
         for (size_t i = 0; i < zones.size(); ++i) { if (i) zl << ", "; zl << zones[i]; }
-        LOG_INFO("server.loading", "[WeatherVibe] profile '{}' -> zone(s) [{}]", profileName, zl.str());
+        LOG_DEBUG("server.loading", "[WeatherVibe] profile '{}' -> zone(s) [{}]", profileName, zl.str());
     }
 
     LOG_INFO("server.loading", "[WeatherVibe] {} profile(s) active", gProfiles.size());
@@ -876,13 +876,13 @@ void WeatherVibeEngine_Init()
         for (size_t i = 0; i < gProfiles.size(); ++i)
             gProfiles[i].state.reapplyTimerMs = staggerStep * static_cast<uint32>(i);
 
-        LOG_INFO("server.loading",
+        LOG_DEBUG("server.loading",
             "[WeatherVibe] reapply every {}s, stagger step {}ms across {} profile(s)",
             gReapplyIntervalMs / 1000, staggerStep, gProfiles.size());
     }
     else
     {
-        LOG_INFO("server.loading", "[WeatherVibe] reapply disabled");
+        LOG_DEBUG("server.loading", "[WeatherVibe] reapply disabled");
     }
 
     // Seed prevSeason so the first tick doesn't false-trigger a blend window.
