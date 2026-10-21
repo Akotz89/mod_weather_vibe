@@ -240,9 +240,7 @@ float WeatherVibeCore::MapPercentToRawGrade(DayPart dp, WeatherState state, floa
 {
     percentage = std::clamp(percentage, 0.0f, 1.0f);
     if (state == WEATHER_STATE_FINE)
-    {
-        return 1.0f - percentage;  // 100% fine = 0.0 (clear), 0% fine = 1.0 (overcast)
-    }
+        percentage = 1.0f - percentage;  // Higher Fine percentage means clearer skies.
 
     auto const& table = m_stateRanges[(size_t)dp];
     auto it = table.find((uint32)state);
