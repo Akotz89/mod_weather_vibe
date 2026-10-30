@@ -137,12 +137,11 @@ void WeatherVibeCore::LoadIntensityRangesConfig()
             return oss.str();
         };
 
-    Range def{ 0.30f, 1.00f };
-
     for (DayPart dp : { DayPart::MORNING, DayPart::AFTERNOON, DayPart::EVENING, DayPart::NIGHT })
     {
         for (WeatherState ws : kAcceptedStates)
         {
+            Range def = ws == WEATHER_STATE_FINE ? Range{ 0.00f, 0.30f } : Range{ 0.30f, 1.00f };
             m_stateRanges[(size_t)dp][(uint32)ws] = ParseRangePair(makeKey(dp, ws), def);
         }
     }
@@ -244,7 +243,8 @@ float WeatherVibeCore::MapPercentToRawGrade(DayPart dp, WeatherState state, floa
 
     auto const& table = m_stateRanges[(size_t)dp];
     auto it = table.find((uint32)state);
-    Range r = (it != table.end()) ? it->second : Range{ 0.30f, 1.00f };
+    Range r = (it != table.end()) ? it->second :
+        (state == WEATHER_STATE_FINE ? Range{ 0.00f, 0.30f } : Range{ 0.30f, 1.00f });
 
     return r.min + percentage * (r.max - r.min);
 }
@@ -255,7 +255,7 @@ Range WeatherVibeCore::ParseRangePair(std::string const& key, Range def)
     if (!v.empty())
     {
         float a = def.min, b = def.max;
-        if (std::sscanf(v.c_str(), " %f , %f ", &a, &b) == 2)
+        if (std::sscanf(v.c_str(), " %f , %f ", &a, &b) == 2 && std::isfinite(a) && std::isfinite(b))
         {
             if (b < a) { std::swap(a, b); }
             return { std::clamp(a, 0.0f, 1.0f), std::clamp(b, 0.0f, 1.0f) };
